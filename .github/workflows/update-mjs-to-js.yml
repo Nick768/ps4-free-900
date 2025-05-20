@@ -4,7 +4,9 @@ on:
   push:
     branches:
       - master
-  workflow_dispatch:
+  workflow_dispatch:  # Ermöglicht das manuelle Auslösen des Workflows
+  schedule:
+    - cron: '0 */12 * * *'  # Führt die Action alle 12 Stunden aus
 
 permissions:
   contents: write
