@@ -18,10 +18,8 @@ jobs:
 
       - name: Rename .mjs to .js and replace in files
         run: |
-          # Rename .mjs-files to .js
-          find . -name "*.mjs" -exec bash -c 'mv "$0" "${0%.mjs}.js"' {} \;
-          # Replace .mjs in every file
-          find . -type f -exec sed -i 's/\.mjs/\.js/g' {} +
+          find . -name "*.mjs" -not -path "./.git/*" -not -path "./.github/*" -exec bash -c 'mv "$0" "${0%.mjs}.js"' {} \;
+          find . -type f -not -path "./.git/*" -not -path "./.github/*" -exec sed -i 's/\.mjs/\.js/g' {} +
 
       - name: Commit changes
         run: |
