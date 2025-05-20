@@ -1,0 +1,30 @@
+name: Update .mjs to .js
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  update-files:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Rename .mjs to .js and replace in files
+        run: |
+          # Rename .mjs-files to .js
+          find . -name "*.mjs" -exec bash -c 'mv "$0" "${0%.mjs}.js"' {} \;
+
+          # Replace .mjs in every file
+          find . -type f -exec sed -i 's/\.mjs/\.js/g' {} +
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Convert .mjs files to .js" || echo "No changes to commit"
+          git push
