@@ -31,7 +31,7 @@ jobs:
       - name: Fetch upstream changes
         run: |
           git fetch upstream  # Änderungen vom Upstream abrufen
-          git merge upstream/master  # Änderungen in den aktuellen Branch mergen
+          git pull upstream master  # Änderungen in den aktuellen Branch pullen
 
       - name: Rename .mjs to .js and replace in files
         run: |
