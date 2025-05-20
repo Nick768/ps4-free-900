@@ -3,7 +3,7 @@ name: Update .mjs to .js
 on:
   push:
     branches:
-      - master
+      - main
 
 permissions:
   contents: write
@@ -15,15 +15,32 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Holen Sie sich die gesamte Historie, um den Upstream zu synchronisieren
+
+      - name: Set up Git
+        run: |
+          git config --global user.email "action@github.com"
+          git config --global user.name "GitHub Action"
+
+      - name: Add upstream remote
+        run: |
+          git remote add upstream https://github.com/PS4IDEA/900.git  # Upstream-Repository hinzufügen
+
+      - name: Fetch upstream changes
+        run: |
+          git fetch upstream  # Änderungen vom Upstream abrufen
+          git merge upstream/main  # Änderungen in den aktuellen Branch mergen
 
       - name: Rename .mjs to .js and replace in files
         run: |
+          # Alle .mjs-Dateien in .js umbenennen, ohne .git und .github zu beeinflussen
           find . -name "*.mjs" -not -path "./.git/*" -not -path "./.github/*" -exec bash -c 'mv "$0" "${0%.mjs}.js"' {} \;
           find . -type f -not -path "./.git/*" -not -path "./.github/*" -exec sed -i 's/\.mjs/\.js/g' {} +
 
       - name: Commit changes
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git commit -a -m "Convert .mjs files to .js" || echo "No changes to commit"
+          git add . --ignore-errors
+          git add -- ':!/.git' ':!/.github'
+          git commit -m "Convert .mjs files to .js" || echo "No changes to commit"
           git push
